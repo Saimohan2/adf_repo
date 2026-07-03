@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-demo-df-jay"
+		},
+		"ls_adls_adfdemojayadlssa_accountKey": {
+			"value": ""
+		},
+		"ls_azure_sql_db_password": {
+			"value": ""
+		},
+		"ls_blob_adfdemosajay_connectionString": {
+			"value": ""
+		},
+		"ls_onprem_sql_server_password": {
+			"value": ""
+		},
+		"ls_adls_adfdemojayadlssa_properties_typeProperties_url": {
+			"value": "https://adfdemojayadlssa.dfs.core.windows.net/"
+		},
+		"ls_azure_sql_db_properties_typeProperties_server": {
+			"value": "adf-demo-sql-server1-jay.database.windows.net"
+		},
+		"ls_azure_sql_db_properties_typeProperties_database": {
+			"value": "adf-demo-sql-db"
+		},
+		"ls_azure_sql_db_properties_typeProperties_userName": {
+			"value": "serveradmin"
+		},
+		"ls_onprem_sql_server_properties_typeProperties_server": {
+			"value": "20.235.56.12"
+		},
+		"ls_onprem_sql_server_properties_typeProperties_database": {
+			"value": "onPremDB"
+		},
+		"ls_onprem_sql_server_properties_typeProperties_userName": {
+			"value": "serveradmin12"
+		},
+		"ls_rest_api_emp_properties_typeProperties_url": {
+			"value": "http://dummy.restapiexample.com/api/v1/employees"
+		}
+	}
+}
