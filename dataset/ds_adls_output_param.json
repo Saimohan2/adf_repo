@@ -1,0 +1,27 @@
+{
+	"name": "ds_adls_output_param",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_adfdemojayadlssa",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat(pipeline().parameters.table_name_pl_param, '_', formatDateTime(utcNow(),'yyyyMMdd'), '.csv')",
+					"type": "Expression"
+				},
+				"fileSystem": "parameter-test"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

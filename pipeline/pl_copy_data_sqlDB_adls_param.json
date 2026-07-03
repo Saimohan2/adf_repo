@@ -1,0 +1,89 @@
+{
+	"name": "pl_copy_data_sqlDB_adls_param",
+	"properties": {
+		"activities": [
+			{
+				"name": "sqltbltoadls",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "pipeline_name",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "start_time",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_db_tbl_dyn",
+						"type": "DatasetReference",
+						"parameters": {
+							"table_name": {
+								"value": "@pipeline().parameters.table_name_pl_param",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_output_param",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"table_name_pl_param": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-07-03T21:30:32Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

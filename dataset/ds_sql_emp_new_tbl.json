@@ -1,0 +1,17 @@
+{
+	"name": "ds_sql_emp_new_tbl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azure_sql_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "employee_new"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

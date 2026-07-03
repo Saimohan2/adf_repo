@@ -1,0 +1,65 @@
+{
+	"name": "pl_variable_demo",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookuptbl",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select max(cast(price as integer)) as max_price\nfrom dbo.sales;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_sql_sales_table",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set max_price",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookuptbl",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "max_price",
+					"value": {
+						"value": "@activity('Lookuptbl').output.firstRow.max_price",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"max_price": {
+				"type": "Integer",
+				"defaultValue": 0
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2026-07-03T22:01:07Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

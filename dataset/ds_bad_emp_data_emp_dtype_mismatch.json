@@ -1,0 +1,24 @@
+{
+	"name": "ds_bad_emp_data_emp_dtype_mismatch",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_adfdemosajay",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "emp_datatype_mismatch.csv",
+				"container": "sql-bad-data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

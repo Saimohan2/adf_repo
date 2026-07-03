@@ -1,0 +1,17 @@
+{
+	"name": "ds_onprem_sql_db_catgtbl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_onprem_sql_server",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Category_details"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

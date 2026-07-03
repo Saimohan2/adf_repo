@@ -1,0 +1,15 @@
+{
+	"name": "adf-demo-df-jay",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c2b2e0f1-6d9e-47fb-990d-e3e002509ccc",
+		"tenantId": "d839445d-66fa-4986-9af8-36cd5a8fbff0"
+	}
+}
