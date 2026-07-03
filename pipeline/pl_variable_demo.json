@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "Set max_price",
+				"name": "Set_max_price",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
