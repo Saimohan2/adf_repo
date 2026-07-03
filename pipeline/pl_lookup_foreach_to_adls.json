@@ -93,7 +93,7 @@
 											"enableStaging": true,
 											"stagingSettings": {
 												"linkedServiceName": {
-													"referenceName": "ls_adls_adfdemojayadlssa",
+													"referenceName": "ls_blob_adfdemosajay",
 													"type": "LinkedServiceReference"
 												},
 												"path": "staging"
