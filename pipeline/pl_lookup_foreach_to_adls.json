@@ -47,72 +47,95 @@
 					},
 					"activities": [
 						{
-							"name": "copy_to_adls",
-							"type": "Copy",
+							"name": "If_tbl_startswith",
+							"type": "IfCondition",
 							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
 							"userProperties": [],
 							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
+								"expression": {
+									"value": "@startswith(item().TABLE_NAME, 'emp')",
+									"type": "Expression"
 								},
-								"sink": {
-									"type": "DelimitedTextSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "ds_sql_fully_param",
-									"type": "DatasetReference",
-									"parameters": {
-										"table_schema": {
-											"value": "@item().table_schema",
-											"type": "Expression"
+								"ifTrueActivities": [
+									{
+										"name": "copy_emp",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
 										},
-										"table_name": {
-											"value": "@item().table_name",
-											"type": "Expression"
-										}
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"additionalColumns": [
+													{
+														"name": "source_table",
+														"value": {
+															"value": "@item().table_name",
+															"type": "Expression"
+														}
+													}
+												],
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "ds_sql_fully_param",
+												"type": "DatasetReference",
+												"parameters": {
+													"table_schema": {
+														"value": "@item().table_schema",
+														"type": "Expression"
+													},
+													"table_name": {
+														"value": "@item().table_name",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "ds_foreach_copy_output",
+												"type": "DatasetReference",
+												"parameters": {
+													"file_name": {
+														"value": "@concat(item().table_name, '_', formatDateTime(utcNow(), 'yyyyMMddHHmmss'), '.csv')",
+														"type": "Expression"
+													}
+												}
+											}
+										]
 									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "ds_foreach_copy_output",
-									"type": "DatasetReference",
-									"parameters": {
-										"file_name": {
-											"value": "@concat(item().TABLE_NAME, '_', formatDateTime(utcNow(),'yyyyMMdd'), '.csv' )",
-											"type": "Expression"
-										}
-									}
-								}
-							]
+								]
+							}
 						}
 					]
 				}
