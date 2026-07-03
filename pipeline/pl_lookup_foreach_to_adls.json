@@ -104,7 +104,13 @@
 							"outputs": [
 								{
 									"referenceName": "ds_foreach_copy_output",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"file_name": {
+											"value": "@concat(item().TABLE_NAME, '_', formatDateTime(utcNow(),'yyyyMMdd'), '.csv' )",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
