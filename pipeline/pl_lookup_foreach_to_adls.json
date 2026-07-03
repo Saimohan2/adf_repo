@@ -53,7 +53,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@startswith(item().TABLE_NAME, 'emp')",
+									"value": "@startswith(item().TABLE_NAME, 'Sal')",
 									"type": "Expression"
 								},
 								"ifTrueActivities": [
@@ -85,17 +85,19 @@
 												"partitionOption": "None"
 											},
 											"sink": {
-												"type": "DelimitedTextSink",
-												"storeSettings": {
-													"type": "AzureBlobFSWriteSettings"
-												},
-												"formatSettings": {
-													"type": "DelimitedTextWriteSettings",
-													"quoteAllText": true,
-													"fileExtension": ".txt"
+												"type": "SnowflakeV2Sink",
+												"importSettings": {
+													"type": "SnowflakeImportCopyCommand"
 												}
 											},
-											"enableStaging": false,
+											"enableStaging": true,
+											"stagingSettings": {
+												"linkedServiceName": {
+													"referenceName": "ls_adls_adfdemojayadlssa",
+													"type": "LinkedServiceReference"
+												},
+												"path": "staging"
+											},
 											"translator": {
 												"type": "TabularTranslator",
 												"typeConversion": true,
@@ -123,14 +125,8 @@
 										],
 										"outputs": [
 											{
-												"referenceName": "ds_foreach_copy_output",
-												"type": "DatasetReference",
-												"parameters": {
-													"file_name": {
-														"value": "@concat(item().table_name, '_', formatDateTime(utcNow(), 'yyyyMMddHHmmss'), '.csv')",
-														"type": "Expression"
-													}
-												}
+												"referenceName": "ds_sf_sales",
+												"type": "DatasetReference"
 											}
 										]
 									}
