@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "adf-demo-df-jay"
 		},
+		"Snowflake1_password": {
+			"value": ""
+		},
 		"ls_adls_adfdemojayadlssa_accountKey": {
 			"value": ""
 		},
@@ -16,6 +19,9 @@
 		},
 		"ls_onprem_sql_server_password": {
 			"value": ""
+		},
+		"Snowflake1_properties_typeProperties_database": {
+			"value": "sample_db"
 		},
 		"ls_adls_adfdemojayadlssa_properties_typeProperties_url": {
 			"value": "https://adfdemojayadlssa.dfs.core.windows.net/"
@@ -40,6 +46,9 @@
 		},
 		"ls_rest_api_emp_properties_typeProperties_url": {
 			"value": "http://dummy.restapiexample.com/api/v1/employees"
+		},
+		"ls_stg_blob_sasUri": {
+			"value": ""
 		},
 		"containerUri": {
 			"value": ""
