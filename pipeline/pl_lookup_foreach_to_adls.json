@@ -72,15 +72,6 @@
 										"typeProperties": {
 											"source": {
 												"type": "AzureSqlSource",
-												"additionalColumns": [
-													{
-														"name": "source_table",
-														"value": {
-															"value": "@item().table_name",
-															"type": "Expression"
-														}
-													}
-												],
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
