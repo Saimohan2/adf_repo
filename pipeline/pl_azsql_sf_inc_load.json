@@ -1,0 +1,41 @@
+{
+	"name": "pl_azsql_sf_inc_load",
+	"properties": {
+		"activities": [
+			{
+				"name": "max_order_ts_lookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"query": "select last_processed_order_ts\nfrom sample_db.raw.metadata\nwhere tbl_name = \"sales_new\";",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						},
+						"treatDecimalAsString": false
+					},
+					"dataset": {
+						"referenceName": "ds_sf_metadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"variables": {
+			"last_processed_order_ts": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
