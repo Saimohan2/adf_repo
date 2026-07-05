@@ -27,7 +27,7 @@
 						"referenceName": "ds_sf_metadata",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			}
 		],
