@@ -67,6 +67,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'ls_stg_blob'"
 		},
+		"tr_hourly_properties_pl_azsql_sf_inc_load_parameters_tbl_name": {
+			"type": "string",
+			"defaultValue": "sales_new"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -176,6 +180,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"tr_hourly_properties_pl_azsql_sf_inc_load_parameters_tbl_name": {
+						"value": "[parameters('tr_hourly_properties_pl_azsql_sf_inc_load_parameters_tbl_name')]"
 					}
 				}
 			},

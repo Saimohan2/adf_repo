@@ -356,7 +356,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SnowflakeV2Source",
-								"query": "SELECT COALESCE(\n    MAX(TO_VARCHAR(last_processed_order_ts, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF7\"Z\"')), \n    '1900-01-01T00:00:00.000Z'::VARCHAR\n) AS LAST_PROCESSED_ORDER_TS\nFROM sample_db.raw.metadata\nWHERE tbl_name = 'sales_new';",
+								"query": "SELECT COALESCE(\n    MAX(TO_VARCHAR(last_processed_order_ts, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF7\"Z\"')), \n    '1900-01-01T00:00:00.000Z'::VARCHAR\n) AS LAST_PROCESSED_ORDER_TS\nFROM sample_db.raw.metadata\nWHERE tbl_name = '@{pipeline().parameters.tbl_name}';",
 								"exportSettings": {
 									"type": "SnowflakeExportCopyCommand"
 								},
@@ -426,7 +426,7 @@
 									}
 								],
 								"sqlReaderQuery": {
-									"value": "select *\nfrom dbo.sales_new\nwhere order_time > CONVERT(DATETIME2, '@{variables('last_processed_order_ts')}', 126);",
+									"value": "select *\nfrom dbo.@{pipeline().parameters.tbl_name}\nwhere order_time > CONVERT(DATETIME2, '@{variables('last_processed_order_ts')}', 126);",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -492,7 +492,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SnowflakeV2Source",
-								"query": "select to_varchar(max(order_time), 'YYYY-MM-DD HH24:MI:SS.FF3\"Z\"') as max_order_time\nfrom sample_db.raw.sales_new;",
+								"query": "select to_varchar(max(order_time), 'YYYY-MM-DD HH24:MI:SS.FF3\"Z\"') as max_order_time\nfrom sample_db.raw.@{pipeline().parameters.tbl_name};",
 								"exportSettings": {
 									"type": "SnowflakeExportCopyCommand"
 								},
@@ -557,7 +557,7 @@
 								{
 									"type": "Query",
 									"text": {
-										"value": "merge into sample_db.raw.metadata as t\nusing(\n        select \n        'sales_new' as tbl_name,\n        to_timestamp('@{variables('last_processed_order_ts')}',\n                        'YYYY-MM-DD\"T\"HH24:MI:SS.FF7')\n                            as last_processed_order_ts\n                        ) as s\non s.tbl_name = t.tbl_name\nwhen matched then\n    update set t.last_processed_order_ts = s.last_processed_order_ts\nwhen not matched then\n    insert(tbl_name, last_processed_order_ts)\n    values(s.tbl_name, s.last_processed_order_ts)",
+										"value": "merge into sample_db.raw.metadata as t\nusing(\n        select \n        '@{pipeline().parameters.tbl_name}' as tbl_name,\n        to_timestamp('@{variables('last_processed_order_ts')}',\n                        'YYYY-MM-DD\"T\"HH24:MI:SS.FF7')\n                            as last_processed_order_ts\n                        ) as s\non s.tbl_name = t.tbl_name\nwhen matched then\n    update set t.last_processed_order_ts = s.last_processed_order_ts\nwhen not matched then\n    insert(tbl_name, last_processed_order_ts)\n    values(s.tbl_name, s.last_processed_order_ts)",
 										"type": "Expression"
 									}
 								}
@@ -569,6 +569,11 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"tbl_name": {
+						"type": "string"
+					}
 				},
 				"variables": {
 					"last_processed_order_ts": {

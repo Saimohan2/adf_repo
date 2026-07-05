@@ -49,6 +49,9 @@
 		},
 		"ls_stg_blob_sasUri": {
 			"value": ""
+		},
+		"tr_hourly_properties_pl_azsql_sf_inc_load_parameters_tbl_name": {
+			"value": "sales_new"
 		}
 	}
 }
