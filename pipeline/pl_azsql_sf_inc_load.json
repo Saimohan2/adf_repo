@@ -49,10 +49,81 @@
 				"typeProperties": {
 					"variableName": "last_processed_order_ts",
 					"value": {
-						"value": "@activity('max_order_ts_lookup').output.firstRow.LAST_PROCESSED_ORDER_TS",
+						"value": "@convertFromUtc(activity('max_order_ts_lookup').output.firstRow.LAST_PROCESSED_ORDER_TS, 'India Standard Time')",
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "copy_asqldb_tbl_to_sf",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set_var_last_pr_ord_ts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "processed_time",
+								"value": {
+									"value": "@convertFromUtc(utcNow(), 'India Standard Time')",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": "select *\nfrom dbo.sales\nwhere order_time > to_timestamp('@{variables('last_processed_order_ts')}', 'YYYY-MM-DD HH24:MI:SS.FF3')",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "ls_stg_blob",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_sales_new_tbl",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sf_sales_new_tbl",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"variables": {
