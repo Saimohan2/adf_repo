@@ -86,7 +86,7 @@
 							}
 						],
 						"sqlReaderQuery": {
-							"value": "select *\nfrom dbo.sales\nwhere order_time > CONVERT(DATETIME2, '@{variables('last_processed_order_ts')}', 126)",
+							"value": "select *\nfrom dbo.sales_new\nwhere order_time > CONVERT(DATETIME2, '@{variables('last_processed_order_ts')}', 126);",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
