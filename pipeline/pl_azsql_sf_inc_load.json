@@ -1,0 +1,234 @@
+{
+	"name": "pl_azsql_sf_inc_load",
+	"properties": {
+		"activities": [
+			{
+				"name": "max_order_ts_lookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"query": "SELECT COALESCE(\n    MAX(TO_VARCHAR(last_processed_order_ts, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF7\"Z\"')), \n    '1900-01-01T00:00:00.000Z'::VARCHAR\n) AS LAST_PROCESSED_ORDER_TS\nFROM sample_db.raw.metadata\nWHERE tbl_name = 'sales_new';",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						},
+						"treatDecimalAsString": false
+					},
+					"dataset": {
+						"referenceName": "ds_sf_metadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "set_var_last_pr_ord_ts",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "max_order_ts_lookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "last_processed_order_ts",
+					"value": {
+						"value": "@convertFromUtc(activity('max_order_ts_lookup').output.firstRow.LAST_PROCESSED_ORDER_TS, 'India Standard Time')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "copy_asqldb_tbl_to_sf",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set_var_last_pr_ord_ts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "processed_time",
+								"value": {
+									"value": "@convertFromUtc(utcNow(), 'India Standard Time')",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "select *\nfrom dbo.sales_new\nwhere order_time > CONVERT(DATETIME2, '@{variables('last_processed_order_ts')}', 126);",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "ls_stg_blob",
+							"type": "LinkedServiceReference"
+						},
+						"path": "staging"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_sales_new_tbl",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sf_sales_new_tbl",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "look_up_updated_max_order_ts",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "copy_asqldb_tbl_to_sf",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"query": "select to_varchar(max(order_time), 'YYYY-MM-DD HH24:MI:SS.FF3\"Z\"') as max_order_time\nfrom sample_db.raw.sales_new;",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						},
+						"treatDecimalAsString": false
+					},
+					"dataset": {
+						"referenceName": "ds_sf_sales_new_tbl",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "set_var_updated_ordertime",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "look_up_updated_max_order_ts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "last_processed_order_ts",
+					"value": {
+						"value": "@convertFromUtc(activity('look_up_updated_max_order_ts').output.firstRow.max_order_time, 'India Standard Time')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "update metadata table",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "set_var_updated_ordertime",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "Snowflake1",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "merge into sample_db.raw.metadata as t\nusing(\n        select \n        'sales_new' as tbl_name,\n        to_timestamp('@{variables('last_processed_order_ts')}',\n                        'YYYY-MM-DD\"T\"HH24:MI:SS.FF7')\n                            as last_processed_order_ts\n                        ) as s\non s.tbl_name = t.tbl_name\nwhen matched then\n    update set t.last_processed_order_ts = s.last_processed_order_ts\nwhen not matched then\n    insert(tbl_name, last_processed_order_ts)\n    values(s.tbl_name, s.last_processed_order_ts)",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00",
+					"treatDecimalAsString": false
+				}
+			}
+		],
+		"variables": {
+			"last_processed_order_ts": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
