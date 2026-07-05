@@ -1,0 +1,17 @@
+{
+	"name": "tr_hourly",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2026-07-05T17:27:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
