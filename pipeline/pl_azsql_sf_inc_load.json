@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SnowflakeV2Source",
-						"query": "select last_processed_order_ts\nfrom sample_db.raw.metadata\nwhere tbl_name = 'sales_new';",
+						"query": "select to_varchar(last_processed_order_ts, 'YYYY-MM-DD HH24:MI:SS.FF3') as LAST_PROCESSED_ORDER_TS\nfrom sample_db.raw.metadata\nwhere tbl_name = 'sales_new';",
 						"exportSettings": {
 							"type": "SnowflakeExportCopyCommand"
 						},
