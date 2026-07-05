@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SnowflakeV2Source",
-						"query": "select MAX(TO_VARCHAR(last_processed_order_ts, 'YYYY-MM-DD HH24:MI:SS.FF3')), \n    '1900-01-01 00:00:00.000'::VARCHAR\n) as LAST_PROCESSED_ORDER_TS\nfrom sample_db.raw.metadata\nwhere tbl_name = 'sales_new';",
+						"query": "SELECT COALESCE(\n    MAX(TO_VARCHAR(last_processed_order_ts, 'YYYY-MM-DD HH24:MI:SS.FF3')), \n    '1900-01-01 00:00:00.000'::VARCHAR\n) AS LAST_PROCESSED_ORDER_TS\nFROM sample_db.raw.metadata\nWHERE tbl_name = 'sales_new';",
 						"exportSettings": {
 							"type": "SnowflakeExportCopyCommand"
 						},
