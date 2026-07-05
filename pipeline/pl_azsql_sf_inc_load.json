@@ -29,6 +29,30 @@
 					},
 					"firstRowOnly": true
 				}
+			},
+			{
+				"name": "set_var_last_pr_ord_ts",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "max_order_ts_lookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "last_processed_order_ts",
+					"value": {
+						"value": "@activity('max_order_ts_lookup').output.firstRow.LAST_PROCESSED_ORDER_TS",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
